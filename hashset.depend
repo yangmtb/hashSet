@@ -1,0 +1,48 @@
+# depslib dependency file v1.0
+1496479571 source:/home/yang/cpp/hashset/pair64.cpp
+	"main.h"
+	<algorithm>
+	<ctype.h>
+	<iostream>
+	<stdexcept>
+
+1496478767 /home/yang/cpp/hashset/main.h
+	<string>
+	<sys/types.h>
+	<utility>
+	<cstdint>
+
+1496481441 source:/home/yang/cpp/hashset/main.cpp
+	"main.h"
+	<algorithm>
+	<arpa/inet.h>
+	<cstdio>
+	<cstdlib>
+	<cstring>
+	<errno.h>
+	<exception>
+	<fstream>
+	<iostream>
+	<limits.h>
+	<regex>
+	<sys/stat.h>
+	<time.h>
+	<unistd.h>
+	<vector>
+	<netinet/in.h>
+	<sys/socket.h>
+
+1496486926 source:/home/yang/cpp/hashset/handler.cpp
+	"main.h"
+	<algorithm>
+	<iostream>
+	<array>
+	<exception>
+	<inttypes.h>
+	<poll.h>
+	<sys/socket.h>
+	<sys/time.h>
+	<sys/types.h>
+	<vector>
+	<unistd.h>
+
