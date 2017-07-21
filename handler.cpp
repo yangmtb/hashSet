@@ -117,6 +117,7 @@ namespace {
             cerr << "send err" << endl;
             throw NetworkError();
         }
+        //std::cout << "send success:" << line << std::endl;
     }
 
     auto tokenize(string &&line, char character = ' ')
@@ -152,17 +153,23 @@ void handleClient(const int32_t fd)
     enum class Command {
         Bye = 0,
         Query = 1,
-        Unknown = 2
+        Version = 2,
+        Unknown = 3
     };
     try {
         auto commands = tokenize(readLine(fd));
+        if (commands.size() <= 0) {
+            return;
+        }
         while (true) {
             auto cmdString = commands.at(0);
             Command cmd = Command::Unknown;
             if (cmdString == "QUERY") {
                 cmd = Command::Query;
-            } else if (cmdString == "Byte") {
+            } else if (cmdString == "BYE") {
                 cmd = Command::Bye;
+            } else if (cmdString == "VERSION") {
+                cmd = Command::Version;
             }
             switch (cmd) {
             case Command::Bye:
@@ -170,8 +177,11 @@ void handleClient(const int32_t fd)
             case Command::Query:
                 writeLine(fd, generateResponse(commands.begin()+1, commands.end()));
                 break;
+            case Command::Version:
+                writeLine(fd, "OK");
+                break;
             case Command::Unknown:
-                cerr << "unknown" << endl;
+                cerr << "unknown:" << cmdString << endl;
                 break;
             }
             commands = tokenize(readLine(fd));

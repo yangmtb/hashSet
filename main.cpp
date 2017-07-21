@@ -42,7 +42,7 @@ bool dryRun { false };
 
 void loadHashes()
 {
-    const regex md5_re { "[A-Fa-f0-9]{32}" };
+    const regex md5_re { "^[A-Fa-f0-9]{32}$" };
     uint32_t hashCount { 0 };
     ifstream infile { hashesLocation.c_str() };
     try {
@@ -60,12 +60,14 @@ void loadHashes()
         string line;
         getline(infile, line);
         transform(line.begin(), line.end(), line.begin(), ::toupper);
-        if (0 == line.size()) {
+        if (line.size() < 76) {
+            cout << "line: " << line << endl;
             continue;
         }
+        string tmp {line, 44, 32};
         static uint16_t errCount = 0;
-        if (!regex_match(line.cbegin(), line.cend(), md5_re)) {
-            cout << "not match: " << line << endl;
+        if (!regex_match(tmp.cbegin(), tmp.cend(), md5_re)) {
+            cout << "not match: " << tmp << endl;
             if (10 == ++errCount) {
                 exit(EXIT_FAILURE);
             }
@@ -73,12 +75,12 @@ void loadHashes()
         }
 
         try {
-            string tmp {line, 44, 32};
             hashSet.emplace_back(toPair64(tmp));
             //hashSet.emplace_back(toPair64(line));
             hashCount++;
             if (0 == hashCount % 1000000) {
                 cout << "loaded " << to_string(hashCount/1000000) << " million hashes." << endl;
+                //break;
             }
         } catch (std::bad_alloc &) {
             cerr << "couldn't allocate enough memory." << endl;
@@ -154,13 +156,21 @@ const vector<pair64> &hashes { hashSet };
 
 int main()
 {
+    /*string line ("\"0000002D9D62AEBE1E0E9DB6C4C4C7C16A163D2C\",\"1D6EBB5A789ABD108FF578263E1F40F3\",\"FFFFFFFF\",\"_sfx_0024._p\",4109,21000,\"358\",\"\"");
+    const regex md5_re { ".*\"[A-Fa-f0-9]{32}\".*" };
+    if (!regex_match(line.cbegin(), line.cend(), md5_re)) {
+        cout << "not match: " << line << endl;
+    } else {
+        cout << "    match. " << line << endl;
+    }
+    //return 0;*/
     if (dryRun) {
         daemonize();
     }
     hashesLocation = "/home/yang/NSRLFile.txt";
-    cout << "begin load." << endl;
+    cout << "begin load hashes." << endl;
     loadHashes();
-    cout << "end load." << endl;
+    cout << "end load: " << hashesLocation << endl;
     int32_t clientSock { 0 };
     int32_t svrSock { makeSocket() };
     sockaddr_in client;
